@@ -34,5 +34,9 @@ Thumbs.db
 terraform.tfvars
 crash.log
 
+# Ignore packaging directories and zip files in Lambda functions
+lambda/*/package/
+lambda/*.zip
+
 # Other
 overview.md
