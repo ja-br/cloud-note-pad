@@ -35,7 +35,7 @@ resource "aws_api_gateway_integration" "create_note_integration" {
   http_method = aws_api_gateway_method.notes_post.http_method
   integration_http_method = "POST"
   type        = "AWS"
-
+  uri = aws_lambda_function.create_note.invoke_arn
 }
 
 resource "aws_api_gateway_method_response" "notes" {
