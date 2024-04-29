@@ -12,6 +12,44 @@ resource "aws_lambda_function" "create_note" {
   filename      = "${path.module}/lambda/create_note/create_note.zip"
 }
 
+# Lambda function for deleting a note
+resource "aws_lambda_function" "delete_note" {
+  function_name = "DeleteNoteLambda"
+  handler       = "index.handler"
+  runtime       = "python3.10"
+  role          = aws_iam_role.lambda_exec_role.arn
+  filename      = "${path.module}/lambda/delete_note/delete_note.zip"
+}
+
+# Lambda function for getting a note
+resource "aws_lambda_function" "get_note" {
+  function_name = "GetNoteLambda"
+  handler       = "index.handler"
+  runtime       = "python3.10"
+  role          = aws_iam_role.lambda_exec_role.arn
+  filename      = "${path.module}/lambda/get_note/get_note.zip"
+}
+
+# Lambda function for listing notes
+resource "aws_lambda_function" "list_notes" {
+  function_name = "ListNotesLambda"
+  handler       = "index.handler"
+  runtime       = "python3.10"
+  role          = aws_iam_role.lambda_exec_role.arn
+  filename      = "${path.module}/lambda/list_notes/list_notes.zip"
+}
+
+# Lambda function for updating a note
+resource "aws_lambda_function" "update_note" {
+  function_name = "UpdateNoteLambda"
+  handler       = "index.handler"
+  runtime       = "python3.10"
+  role          = aws_iam_role.lambda_exec_role.arn
+  filename      = "${path.module}/lambda/update_note/update_note.zip"
+}
+
+
+
 # IAM role for Lambda execution
 resource "aws_iam_role" "lambda_exec_role" {
   name = "lambda_exec_role"
@@ -30,14 +68,16 @@ resource "aws_iam_role" "lambda_exec_role" {
   })
 }
 
-
-
 # Deployment of API Gateway
 resource "aws_api_gateway_deployment" "api_deployment" {
   depends_on = [
-    aws_api_gateway_integration.create_note_integration
+    aws_api_gateway_integration.create_note_integration,
+    aws_api_gateway_integration.delete_note_integration,
+    aws_api_gateway_integration.get_note_integration,
+    aws_api_gateway_integration.list_notes_integration,
+    aws_api_gateway_integration.update_note_integration
   ]
-  
+
   rest_api_id = aws_api_gateway_rest_api.NoteTakingAPI.id
   stage_name  = "prod"
 }
