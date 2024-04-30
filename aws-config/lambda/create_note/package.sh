@@ -1,12 +1,3 @@
-# #!/bin/bash
-
-# cd "$(dirname "$0")"
-# pip install --target ./package boto3
-# cd package
-# zip -r ../create_note.zip .
-# cd ..
-# zip -g create_note.zip handler.py
-
 #!/bin/bash
 
 # Setup the package directory and clean previous installations
