@@ -125,6 +125,10 @@ resource "aws_api_gateway_deployment" "api_deployment" {
 
   rest_api_id = aws_api_gateway_rest_api.NoteTakingAPI.id
   stage_name  = "prod"
+
+    lifecycle {
+    ignore_changes = all
+  }
 }
 
 resource "aws_dynamodb_table" "notes" {
