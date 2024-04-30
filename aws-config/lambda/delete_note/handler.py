@@ -6,9 +6,10 @@ table = dynamodb.Table('Notes')
 
 def lambda_handler(event, context):
     try:
-        table.delete_item(
+        note_id = event['pathParameters']['id']
+        response = table.delete_item(
             Key={
-                'noteId': event['pathParameters']['noteId']
+                'noteId': note_id
             }
         )
         return {

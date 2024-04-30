@@ -15,7 +15,7 @@ resource "aws_lambda_function" "create_note" {
 # Lambda function for deleting a note
 resource "aws_lambda_function" "delete_note" {
   function_name = "DeleteNoteLambda"
-  handler       = "index.handler"
+  handler       = "handler.lambda_handler"
   runtime       = "python3.10"
   role          = aws_iam_role.lambda_exec_role.arn
   filename      = "${path.module}/lambda/delete_note/delete_note.zip"
@@ -24,7 +24,7 @@ resource "aws_lambda_function" "delete_note" {
 # Lambda function for getting a note
 resource "aws_lambda_function" "get_note" {
   function_name = "GetNoteLambda"
-  handler       = "index.handler"
+  handler       = "handler.lambda_handler"
   runtime       = "python3.10"
   role          = aws_iam_role.lambda_exec_role.arn
   filename      = "${path.module}/lambda/get_note/get_note.zip"
@@ -33,7 +33,7 @@ resource "aws_lambda_function" "get_note" {
 # Lambda function for listing notes
 resource "aws_lambda_function" "list_notes" {
   function_name = "ListNotesLambda"
-  handler       = "index.handler"
+  handler       = "handler.lambda_handler"
   runtime       = "python3.10"
   role          = aws_iam_role.lambda_exec_role.arn
   filename      = "${path.module}/lambda/list_notes/list_notes.zip"
@@ -42,7 +42,7 @@ resource "aws_lambda_function" "list_notes" {
 # Lambda function for updating a note
 resource "aws_lambda_function" "update_note" {
   function_name = "UpdateNoteLambda"
-  handler       = "index.handler"
+  handler       = "handler.lambda_handler"
   runtime       = "python3.10"
   role          = aws_iam_role.lambda_exec_role.arn
   filename      = "${path.module}/lambda/update_note/update_note.zip"

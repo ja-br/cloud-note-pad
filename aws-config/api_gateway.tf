@@ -82,7 +82,7 @@ resource "aws_api_gateway_integration" "delete_note_integration" {
   resource_id = aws_api_gateway_resource.note.id
   http_method = aws_api_gateway_method.delete_note.http_method
   integration_http_method = "POST"
-  type        = "AWS"
+  type        = "AWS_PROXY"
   uri = aws_lambda_function.delete_note.invoke_arn
 }
 
@@ -104,7 +104,7 @@ resource "aws_api_gateway_integration" "get_note_integration" {
   resource_id = aws_api_gateway_resource.note.id
   http_method = aws_api_gateway_method.note_get.http_method
   integration_http_method = "POST"
-  type        = "AWS"
+  type        = "AWS_PROXY"
   uri = aws_lambda_function.get_note.invoke_arn
 }
 
@@ -126,7 +126,7 @@ resource "aws_api_gateway_integration" "list_notes_integration" {
   resource_id = aws_api_gateway_resource.notes.id
   http_method = aws_api_gateway_method.notes_list.http_method
   integration_http_method = "POST"
-  type        = "AWS"
+  type        = "AWS_PROXY"
   uri = aws_lambda_function.list_notes.invoke_arn
 }
 
@@ -148,7 +148,7 @@ resource "aws_api_gateway_integration" "update_note_integration" {
   resource_id = aws_api_gateway_resource.note.id
   http_method = aws_api_gateway_method.update_note.http_method
   integration_http_method = "POST"
-  type        = "AWS"
+  type        = "AWS_PROXY"
   uri = aws_lambda_function.update_note.invoke_arn
 }
 
