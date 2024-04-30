@@ -6,7 +6,7 @@ provider "aws" {
 # Lambda function for creating a note
 resource "aws_lambda_function" "create_note" {
   function_name = "CreateNoteLambda"
-  handler       = "index.handler"
+  handler       = "handler.lambda_handler"
   runtime       = "python3.10"
   role          = aws_iam_role.lambda_exec_role.arn
   filename      = "${path.module}/lambda/create_note/create_note.zip"
@@ -66,6 +66,22 @@ resource "aws_iam_role" "lambda_exec_role" {
       },
     ]
   })
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_basic" {
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+  role       = aws_iam_role.lambda_exec_role.name
+}
+
+resource "aws_lambda_permission" "apigw_lambda" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.create_note.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  # The /*/* portion grants access from any method on any resource
+  # within the API Gateway "REST API"
+  source_arn = "${aws_api_gateway_rest_api.NoteTakingAPI.execution_arn}/*/*"
 }
 
 # Deployment of API Gateway
