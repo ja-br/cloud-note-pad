@@ -10,15 +10,25 @@ for dir in $lambda_root_dir/*; do
         echo "Packaging Lambda function: $function_name" >&2
         cd "$dir"
         chmod +x package.sh
-        
-        # Run package script and capture the output
-        zip_path=$(./package.sh)
-        
-        # Verify the zip was created
-        if [ -f "$zip_path" ]; then
-            zip_paths[$function_name]=$zip_path
+
+        # Capture output and ensure it's treated as JSON
+        zip_output=$(./package.sh 2>/dev/null)  # Redirect all stderr to null to isolate JSON
+        echo "Debug: Package.sh output: $zip_output" >&2
+
+        # Validate and parse JSON output
+        if echo "$zip_output" | jq empty 2>/dev/null; then
+            zip_path=$(echo "$zip_output" | jq -r '.zip_path')
+            zip_hash=$(echo "$zip_output" | jq -r '.zip_hash')
+
+            if [ -f "$zip_path" ]; then
+                zip_paths[$function_name]=$zip_path
+                echo "Successfully packaged $function_name" >&2
+            else
+                echo "Failed to package or find ZIP file for $function_name" >&2
+                exit 1
+            fi
         else
-            echo "Failed to package or find ZIP file for $function_name" >&2
+            echo "Failed to parse JSON output for $function_name: $zip_output" >&2
             exit 1
         fi
         cd - > /dev/null

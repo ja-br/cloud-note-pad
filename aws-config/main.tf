@@ -10,6 +10,7 @@ resource "aws_lambda_function" "create_note" {
   runtime       = "python3.10"
   role          = aws_iam_role.lambda_exec_role.arn
   filename      = "${path.module}/lambda/create_note/create_note.zip"
+  source_code_hash = filebase64sha256("${path.module}/lambda/create_note/create_note.zip")
 }
 
 # Lambda function for deleting a note
@@ -19,6 +20,7 @@ resource "aws_lambda_function" "delete_note" {
   runtime       = "python3.10"
   role          = aws_iam_role.lambda_exec_role.arn
   filename      = "${path.module}/lambda/delete_note/delete_note.zip"
+  source_code_hash = filebase64sha256("${path.module}/lambda/delete_note/delete_note.zip")
 }
 
 # Lambda function for getting a note
@@ -113,6 +115,11 @@ resource "aws_lambda_permission" "apigw_lambda" {
   source_arn = "${aws_api_gateway_rest_api.NoteTakingAPI.execution_arn}/*/*"
 }
 
+# resource "aws_cloudwatch_log_group" "api_gateway_logs" {
+#   name              = "/aws/apigateway/my_api_logs"
+#   retention_in_days = 7
+# }
+
 # Deployment of API Gateway
 resource "aws_api_gateway_deployment" "api_deployment" {
   depends_on = [
@@ -124,12 +131,8 @@ resource "aws_api_gateway_deployment" "api_deployment" {
   ]
 
   rest_api_id = aws_api_gateway_rest_api.NoteTakingAPI.id
-  stage_name  = "prod"
-
-    lifecycle {
-    ignore_changes = all
-  }
 }
+
 
 resource "aws_dynamodb_table" "notes" {
   name           = "Notes"
@@ -143,6 +146,59 @@ resource "aws_dynamodb_table" "notes" {
 
   tags = {
     Name = "NotesTable"
+  }
+}
+
+# resource "aws_iam_role" "api_gw_cloudwatch" {
+#   name               = "api_gw_cloudwatch"
+#   assume_role_policy = data.aws_iam_policy_document.api_gw_cloudwatch.json
+# }
+#
+# data "aws_iam_policy_document" "api_gw_cloudwatch" {
+#   statement {
+#     actions = ["sts:AssumeRole"]
+#
+#     principals {
+#       type        = "Service"
+#       identifiers = ["apigateway.amazonaws.com"]
+#     }
+#   }
+# }
+
+# resource "aws_iam_role_policy" "api_gw_cloudwatch" {
+#   name   = "default"
+#   role   = aws_iam_role.api_gw_cloudwatch.id
+#   policy = data.aws_iam_policy_document.api_gw_cloudwatch_permissions.json
+# }
+#
+# data "aws_iam_policy_document" "api_gw_cloudwatch_permissions" {
+#   statement {
+#     actions = [
+#       "logs:CreateLogGroup",
+#       "logs:CreateLogStream",
+#       "logs:DescribeLogGroups",
+#       "logs:DescribeLogStreams",
+#       "logs:PutLogEvents",
+#     ]
+#
+#     resources = ["arn:aws:logs:*:*:*"]
+#   }
+# }
+
+resource "aws_api_gateway_stage" "stage" {
+  deployment_id = aws_api_gateway_deployment.api_deployment.id
+  rest_api_id   = aws_api_gateway_rest_api.NoteTakingAPI.id
+  stage_name    = "prod"
+
+#   access_log_settings {
+#     destination_arn = aws_cloudwatch_log_group.api_gateway_logs.arn
+#     format          = "$context.identity.sourceIp - - [$context.requestTime] \"$context.httpMethod $context.routeKey $context.protocol\" $context.status $context.responseLength $context.requestId"
+#   }
+
+#   xray_tracing_enabled = true
+
+  tags = {
+    Name = "tf-acc-test"
   }
 }
 
